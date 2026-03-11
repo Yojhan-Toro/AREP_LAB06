@@ -124,7 +124,7 @@ La aplicación fue desplegada en una instancia EC2 de AWS
 
 ## Construido con
 
-- **Java 17** - Lenguaje principal
+- **Java 21** - Lenguaje principal
 - **Maven** - Gestión de dependencias y ciclo de vida del proyecto
 - **JUnit 5** - Pruebas automatizadas
 - **API de Reflexión de Java** - Motor del framework IoC
