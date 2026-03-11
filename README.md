@@ -10,7 +10,7 @@ Estas instrucciones te permitirán obtener una copia del proyecto en funcionamie
 
 ### Prerrequisitos
 
-- Java 17+
+- Java 21+
 - Maven 3.8+
 - Git
 
