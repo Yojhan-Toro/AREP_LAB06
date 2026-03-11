@@ -1,13 +1,15 @@
 package Arep.Lab06;
+
 import Arep.Lab06.annotations.GetMapping;
+import Arep.Lab06.annotations.RequestParam;
 import Arep.Lab06.annotations.RestController;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URISyntaxException;
 
 public class MicroSpringBoot {
-
 
     public static void run(Class<?> controllerClass, String[] args)
             throws IOException, URISyntaxException {
@@ -27,21 +29,26 @@ public class MicroSpringBoot {
 
                 HttpServer.get(path, (req, res) -> {
                     try {
-                        Class<?>[] paramTypes = method.getParameterTypes();
-                        Object result;
+                        Parameter[] parameters = method.getParameters();
+                        Object[] args2 = new Object[parameters.length];
 
-                        if (paramTypes.length == 2
-                                && paramTypes[0] == HttpRequest.class
-                                && paramTypes[1] == HttpResponse.class) {
-                            result = method.invoke(null, req, res);
-                        } else if (paramTypes.length == 1
-                                && paramTypes[0] == HttpRequest.class) {
-                            result = method.invoke(null, req);
-                        } else {
-                            // No-arg method (like Lab 06's HelloController)
-                            result = method.invoke(null);
+                        for (int i = 0; i < parameters.length; i++) {
+                            Parameter param = parameters[i];
+
+                            if (param.getType() == HttpRequest.class) {
+                                args2[i] = req;
+                            } else if (param.getType() == HttpResponse.class) {
+                                args2[i] = res;
+                            } else if (param.isAnnotationPresent(RequestParam.class)) {
+                                RequestParam rp = param.getAnnotation(RequestParam.class);
+                                String val = req.getValue(rp.value());
+                                args2[i] = val.isEmpty() ? rp.defaultValue() : val;
+                            } else {
+                                args2[i] = null;
+                            }
                         }
 
+                        Object result = method.invoke(null, args2);
                         return result != null ? result.toString() : "";
 
                     } catch (Exception e) {
